@@ -2,9 +2,11 @@ using System;
 using System.Collections.Generic;
 using System.Linq;
 using System.Threading.Tasks;
+using CoreIdentityProject.CustomValidation;
 using CoreIdentityProject.Models;
 using Microsoft.AspNetCore.Builder;
 using Microsoft.AspNetCore.Hosting;
+using Microsoft.AspNetCore.Http;
 using Microsoft.AspNetCore.HttpsPolicy;
 using Microsoft.AspNetCore.Identity;
 using Microsoft.EntityFrameworkCore;
@@ -31,7 +33,34 @@ namespace CoreIdentityProject
                 opts.UseSqlServer(Configuration["ConnectionStrings:DefaultConnectionString"]);
             });
 
-            services.AddIdentity<AppUser,IdentityRole>().AddEntityFrameworkStores<AppIdentityDbContext>();
+
+            services.ConfigureApplicationCookie(opts =>
+            {
+                opts.LoginPath = new PathString("/Home/Login");
+                opts.Cookie = new CookieBuilder
+                {
+                    Name = "MyBlog",
+                    HttpOnly = false,
+                    SameSite = SameSiteMode.Lax,
+                    SecurePolicy = CookieSecurePolicy.SameAsRequest
+
+                };
+                opts.SlidingExpiration = true;
+                opts.ExpireTimeSpan =TimeSpan.FromDays(7);
+
+            });
+
+            services.AddIdentity<AppUser,AppRole>(opts =>
+            {
+                opts.User.RequireUniqueEmail = true;
+                opts.User.AllowedUserNameCharacters = " abcçdefðghýijklmnoöpqrsþtuüvwxyzABCDEFGHIÝJKLMNÖOPQRSTUVWXYZ0123456789-._?!";
+
+                opts.Password.RequiredLength = 4;
+                opts.Password.RequireNonAlphanumeric = false;
+                opts.Password.RequireLowercase = false;
+                opts.Password.RequireUppercase = false;
+                opts.Password.RequireDigit = false;
+            }).AddPasswordValidator<CustomPasswordValidator>().AddUserValidator<CustomUserValidator>().AddErrorDescriber<CustomIdentityErrorDescriber>().AddEntityFrameworkStores<AppIdentityDbContext>();
 
             services.AddMvc();
             services.AddRazorPages();
