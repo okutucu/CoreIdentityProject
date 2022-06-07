@@ -33,6 +33,18 @@ namespace CoreIdentityProject
                 opts.UseSqlServer(Configuration["ConnectionStrings:DefaultConnectionString"]);
             });
 
+            services.AddIdentity<AppUser,AppRole>(opts =>
+            {
+                opts.User.RequireUniqueEmail = true;
+                opts.User.AllowedUserNameCharacters = " abcçdefðghýijklmnoöpqrsþtuüvwxyzABCDEFGHIÝJKLMNÖOPQRSTUVWXYZ0123456789-._?!";
+
+                opts.Password.RequiredLength = 4;
+                opts.Password.RequireNonAlphanumeric = false;
+                opts.Password.RequireLowercase = false;
+                opts.Password.RequireUppercase = false;
+                opts.Password.RequireDigit = false;
+            }).AddPasswordValidator<CustomPasswordValidator>().AddUserValidator<CustomUserValidator>().AddErrorDescriber<CustomIdentityErrorDescriber>().AddEntityFrameworkStores<AppIdentityDbContext>().AddDefaultTokenProviders();
+
 
             services.ConfigureApplicationCookie(opts =>
             {
@@ -46,24 +58,15 @@ namespace CoreIdentityProject
 
                 };
                 opts.SlidingExpiration = true;
-                opts.ExpireTimeSpan =TimeSpan.FromDays(7);
+                opts.ExpireTimeSpan = TimeSpan.FromDays(60);
 
             });
 
-            services.AddIdentity<AppUser,AppRole>(opts =>
-            {
-                opts.User.RequireUniqueEmail = true;
-                opts.User.AllowedUserNameCharacters = " abcçdefðghýijklmnoöpqrsþtuüvwxyzABCDEFGHIÝJKLMNÖOPQRSTUVWXYZ0123456789-._?!";
-
-                opts.Password.RequiredLength = 4;
-                opts.Password.RequireNonAlphanumeric = false;
-                opts.Password.RequireLowercase = false;
-                opts.Password.RequireUppercase = false;
-                opts.Password.RequireDigit = false;
-            }).AddPasswordValidator<CustomPasswordValidator>().AddUserValidator<CustomUserValidator>().AddErrorDescriber<CustomIdentityErrorDescriber>().AddEntityFrameworkStores<AppIdentityDbContext>();
-
             services.AddMvc();
             services.AddRazorPages();
+
+
+
         }
 
         // This method gets called by the runtime. Use this method to configure the HTTP request pipeline.
