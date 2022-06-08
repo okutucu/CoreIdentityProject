@@ -16,7 +16,7 @@ namespace CoreIdentityProject.Helper
                 DeliveryMethod = SmtpDeliveryMethod.Network,
                 UseDefaultCredentials = false,
                 EnableSsl = true,
-                Credentials = new NetworkCredential("oktc95@gmail.com", "19691991aq")
+                Credentials = new NetworkCredential("oktc95@gmail.com", "****")
                 
             };
 
