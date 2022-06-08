@@ -21,6 +21,7 @@
 
 
 				<ul class="nav">
+				
 					<li class="nav-item">
 						<a class="nav-link" asp-action="Index" asp-controller="Member">Üye Ana Sayfa</a>
 					</li>
@@ -49,7 +50,7 @@
 				<h3>Menü</h3>
 				<a class="btn btn-info d-block mt-3" asp-action="PasswordChange" asp-controller="Member">Şifre Değiştirme</a>
 				<a class="btn btn-info  d-block mt-3" asp-action="UserEdit" asp-controller="Member">Bilgi Güncelleme</a>
-				<a class="btn btn-info  d-block mt-3" asp-action="logout" asp-controller="Member">Çıkış Yap</a>
+				<a class="btn btn-info  d-block mt-3" asp-action="LogOut" asp-controller="Member" asp-route-returnUrl="/Home/Index" >Çıkış Yap</a>
 			</div>
 
 		</div>

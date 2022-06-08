@@ -49,6 +49,7 @@ namespace CoreIdentityProject
             services.ConfigureApplicationCookie(opts =>
             {
                 opts.LoginPath = new PathString("/Home/Login");
+                opts.LogoutPath = new PathString("/Member/LogOut");
                 opts.Cookie = new CookieBuilder
                 {
                     Name = "MyBlog",
