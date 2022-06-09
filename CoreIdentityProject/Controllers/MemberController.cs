@@ -1,29 +1,32 @@
-﻿using System.Threading.Tasks;
+﻿using System;
+using System.IO;
+using System.Threading.Tasks;
+using CoreIdentityProject.Enums;
 using CoreIdentityProject.Models;
 using CoreIdentityProject.ViewModels;
 using Mapster;
 using Microsoft.AspNetCore.Authorization;
+using Microsoft.AspNetCore.Http;
 using Microsoft.AspNetCore.Identity;
 using Microsoft.AspNetCore.Mvc;
+using Microsoft.AspNetCore.Mvc.Rendering;
 
 namespace CoreIdentityProject.Controllers
 {
     [Authorize]
-    public class MemberController : Controller
+    public class MemberController : BaseController
     {
-        private UserManager<AppUser> _userManager { get; }
-        private SignInManager<AppUser> _signInManager { get; }
+       
 
-        public MemberController(UserManager<AppUser> userManager, SignInManager<AppUser> signInManager)
+        public MemberController(UserManager<AppUser> userManager, SignInManager<AppUser> signInManager):base(userManager, signInManager)
         {
-            _userManager = userManager;
-            _signInManager = signInManager;
+           
         }
 
         public IActionResult Index()
         {
 
-            AppUser user = _userManager.FindByNameAsync(User.Identity.Name).Result;
+            AppUser user = CurrentUser;
 
             UserViewModel userViewModel = user.Adapt<UserViewModel>();
             
@@ -33,24 +36,47 @@ namespace CoreIdentityProject.Controllers
 
         public IActionResult UserEdit()
         {
-            AppUser user = _userManager.FindByNameAsync(User.Identity.Name).Result;
+            AppUser user = CurrentUser;
+
 
             UserViewModel userViewModel = user.Adapt<UserViewModel>();
+
+            ViewBag.Gender = new SelectList(Enum.GetNames(typeof(Gender)));
 
             return View(userViewModel);
         }
 
         [HttpPost]
-        public async Task<IActionResult>  UserEdit(UserViewModel userViewModel)
+        public async Task<IActionResult>  UserEdit(UserViewModel userViewModel,IFormFile userPicture)
         {
-            ModelState.Remove("Password");
+           ModelState.Remove("Password");
            if(ModelState.IsValid)
            {
-                AppUser user = await _userManager.FindByNameAsync(User.Identity.Name);
+
+                AppUser user =  CurrentUser;
+                ViewBag.Gender = new SelectList(Enum.GetNames(typeof(Gender)));
+
+                if (userPicture!=null && userPicture.Length>0)
+                {
+                    string fileName = Guid.NewGuid().ToString() + Path.GetExtension(userPicture.FileName);
+
+                    string path = Path.Combine(Directory.GetCurrentDirectory(), "wwwroot/UserPicture", fileName);
+
+
+                    using(FileStream stream = new FileStream(path,FileMode.Create))
+                    {
+                        await userPicture.CopyToAsync(stream);
+                        user.Picture = "/UserPicture/" + fileName;  
+                    }
+                }
+
 
                 user.UserName = userViewModel.UserName;
                 user.Email = userViewModel.Email;
                 user.PhoneNumber = userViewModel.PhoneNumber;
+                user.City = userViewModel.City;
+                user.BirthDay = userViewModel.BirthDay;
+                user.Gender = (byte)userViewModel.Gender;
 
                 IdentityResult result = await _userManager.UpdateAsync(user);
 
@@ -67,10 +93,8 @@ namespace CoreIdentityProject.Controllers
                 }
                 else
                 {
-                    foreach (IdentityError item in result.Errors)
-                    {
-                        ModelState.AddModelError("",item.Description);
-                    }
+                    AddModelError(result);
+
                 }
            }
 
@@ -87,7 +111,7 @@ namespace CoreIdentityProject.Controllers
         {
             if(ModelState.IsValid)
             {
-                AppUser user = _userManager.FindByNameAsync(User.Identity.Name).Result;
+                AppUser user = CurrentUser;
 
                 bool exist = _userManager.CheckPasswordAsync(user, passwordChangeViewModel.PasswordOld).Result;
 
@@ -109,10 +133,7 @@ namespace CoreIdentityProject.Controllers
                         }
                         else
                         {
-                            foreach (IdentityError error in result.Errors)
-                            {
-                                ModelState.AddModelError("", error.Description);
-                            }
+                            AddModelError(result);
                         }
                     }
                     else
