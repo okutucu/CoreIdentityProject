@@ -150,5 +150,25 @@ namespace CoreIdentityProject.Controllers
             _signInManager.SignOutAsync();
             
         }
+
+
+        public IActionResult AccessDenied()
+        {
+            return View();
+        }
+
+
+        [Authorize(Roles = "manager")]
+        public IActionResult Manager()
+        {
+            return View();
+        }
+
+
+        [Authorize(Roles ="editor")]
+        public IActionResult Editor()
+        {
+            return View();
+        }
     }
 }

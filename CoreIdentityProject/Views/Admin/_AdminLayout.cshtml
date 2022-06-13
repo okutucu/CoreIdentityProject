@@ -11,7 +11,7 @@
 </head>
 <body>
 
-	<nav class="navbar navbar-expand-lg bg-light">
+	<nav class="navbar navbar-expand-lg navbar-dark bg-dark">
 		<div class="container">
 			<a class="navbar-brand" asp-action="Index">Hashtag.com</a>
 			<button class="navbar-toggler" type="button" data-bs-toggle="collapse" data-bs-target="#navbarNav" aria-controls="navbarNav" aria-expanded="false" aria-label="Toggle navigation">
@@ -23,18 +23,10 @@
 				<ul class="nav">
 				
 					<li class="nav-item">
-						<a class="nav-link" asp-action="Index" asp-controller="Member">Üye Ana Sayfa</a>
+						<a class="nav-link" asp-action="Index" asp-controller="Admin">Admin Ana Sayfa</a>
 					</li>
-					<li class="nav-item">
-						<a class="btn btn-info" asp-action="Index" asp-controller="Admin">Admin Ana Sayfa</a>
-					</li>
-					
-					
+				
 				</ul>
-
-				
-				
-				
 
 			</div>
 		</div>
@@ -51,9 +43,9 @@
 
 			<div class="col-md-4">
 				<h3>Menü</h3>
-				<a class="btn btn-info d-block mt-3" asp-action="PasswordChange" asp-controller="Member">Şifre Değiştirme</a>
-				<a class="btn btn-info  d-block mt-3" asp-action="UserEdit" asp-controller="Member">Bilgi Güncelleme</a>
-				<a class="btn btn-info  d-block mt-3" asp-action="LogOut" asp-controller="Member" asp-route-returnUrl="/Home/Index" >Çıkış Yap</a>
+				<a class="btn btn-danger d-block mt-3" asp-action="Users" asp-controller="Admin">Üyeler</a>
+				<a class="btn btn-danger  d-block mt-3" asp-action="Roles" asp-controller="Admin">Roller</a>
+				<a class="btn btn-danger  d-block mt-3" asp-action="LogOut" asp-controller="Member" asp-route-returnUrl="/Home/Index" >Çıkış Yap</a>
 			</div>
 
 		</div>

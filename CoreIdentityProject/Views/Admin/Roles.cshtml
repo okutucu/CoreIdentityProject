@@ -1,0 +1,44 @@
+﻿@model List<AppRole>
+@{
+    ViewData["Title"] = "Roles";
+    Layout = "~/Views/Admin/_AdminLayout.cshtml";
+}
+<a asp-action="RoleCreate" class="btn btn-info">Rol Oluştur</a>
+
+
+
+<h4 class="mt-3">Roller</h4>
+<hr />
+@if(ViewBag.error!=null)
+{
+    <div class="alert alert-danger">@ViewBag.error</div>
+}
+
+<table class="table table-bordered table-striped">
+
+    <tr>
+        <th>Id</th>
+        <th>Rol ismi</th>
+        <th></th>
+       
+    </tr>
+    @foreach (AppRole item in Model)
+   {
+       <tr>
+           <td>
+               @item.Id
+           </td>
+           <td>
+               @item.Name
+           </td>
+           <td>
+               <form asp-action="RoleDelete" asp-route-id="@item.Id" method="post">
+                   <button type="submit" class="btn btn-danger">Sil</button>
+               </form>
+               <a class="btn btn-primary mt-1" asp-action="RoleUpdate" asp-route-id="@item.Id">Güncelle</a>
+           </td>
+           
+       </tr>
+   }
+</table>
+

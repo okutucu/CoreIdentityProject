@@ -60,6 +60,7 @@ namespace CoreIdentityProject
                 };
                 opts.SlidingExpiration = true;
                 opts.ExpireTimeSpan = TimeSpan.FromDays(60);
+                opts.AccessDeniedPath = new PathString("/Member/AccessDenied");
 
             });
 
@@ -96,7 +97,10 @@ namespace CoreIdentityProject
 
             app.UseEndpoints(endpoints =>
             {
-                endpoints.MapDefaultControllerRoute();
+                endpoints.MapControllerRoute(
+                    name: "default",
+                    pattern: "{controller=Home}/{action=Index}/{id?}");
+            
             });
         }
     }
