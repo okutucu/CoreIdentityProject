@@ -22,12 +22,17 @@
 
 				<ul class="nav">
 				
-					<li class="nav-item">
+					<li class="nav-item me-1">
 						<a class="nav-link" asp-action="Index" asp-controller="Member">Üye Ana Sayfa</a>
 					</li>
-					<li class="nav-item">
+					<li class="nav-item me-1">
 						<a class="btn btn-info" asp-action="Index" asp-controller="Admin">Admin Ana Sayfa</a>
 					</li>
+					<li class="nav-item me-1">
+						<a class="btn btn-info" asp-action="Editor" asp-controller="Member">Editör Ana Sayfa</a>
+					</li>
+					<li class="nav-item me-1">
+						<a class="btn btn-info" asp-action="Manager" asp-controller="Member">Manager Ana Sayfa</a>
 					
 					
 				</ul>
@@ -51,6 +56,11 @@
 
 			<div class="col-md-4">
 				<h3>Menü</h3>
+
+			<a class="btn btn-danger" asp-action="AnkaraPage" asp-controller="Member">Ankara Sayfa</a>
+
+			<a class="btn btn-danger" asp-action="ViolencePage" asp-controller="Member">Şiddet İçeren Sayfa</a>
+			<a class="btn btn-danger" asp-action="ExchangeRedirect" asp-controller="Member">Borsa Bilgileri</a>
 				<a class="btn btn-info d-block mt-3" asp-action="PasswordChange" asp-controller="Member">Şifre Değiştirme</a>
 				<a class="btn btn-info  d-block mt-3" asp-action="UserEdit" asp-controller="Member">Bilgi Güncelleme</a>
 				<a class="btn btn-info  d-block mt-3" asp-action="LogOut" asp-controller="Member" asp-route-returnUrl="/Home/Index" >Çıkış Yap</a>

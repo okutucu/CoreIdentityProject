@@ -4,6 +4,8 @@ using System.Linq;
 using System.Threading.Tasks;
 using CoreIdentityProject.CustomValidation;
 using CoreIdentityProject.Models;
+using Microsoft.AspNetCore.Authentication;
+using Microsoft.AspNetCore.Authorization;
 using Microsoft.AspNetCore.Builder;
 using Microsoft.AspNetCore.Hosting;
 using Microsoft.AspNetCore.Http;
@@ -28,9 +30,26 @@ namespace CoreIdentityProject
         // This method gets called by the runtime. Use this method to add services to the container.
         public void ConfigureServices(IServiceCollection services)
         {
+            services.AddTransient<IAuthorizationHandler, ExpireDateExchangeHandler>();
             services.AddDbContext<AppIdentityDbContext>(opts => 
             {
                 opts.UseSqlServer(Configuration["ConnectionStrings:DefaultConnectionString"]);
+            });
+
+            services.AddAuthorization(opts =>
+            {
+                opts.AddPolicy("AnkaraPolicy", policy =>
+                {
+                    policy.RequireClaim("city", "ankara"); 
+                });
+                opts.AddPolicy("ViolencePolicy", policy =>
+                {
+                    policy.RequireClaim("violance");
+                });
+                opts.AddPolicy("ExChangePolicy", policy =>
+                {
+                    policy.AddRequirements(new ExpireDateExchangeRequirement());
+                });
             });
 
             services.AddIdentity<AppUser,AppRole>(opts =>
@@ -64,6 +83,9 @@ namespace CoreIdentityProject
 
             });
 
+
+            services.AddScoped<IClaimsTransformation, ClaimProvider.ClaimProvider>();
+
             services.AddMvc();
             services.AddRazorPages();
 
@@ -93,13 +115,13 @@ namespace CoreIdentityProject
 
             app.UseAuthentication();
             app.UseAuthorization();
-            
+             
 
             app.UseEndpoints(endpoints =>
             {
                 endpoints.MapControllerRoute(
                     name: "default",
-                    pattern: "{controller=Home}/{action=Index}/{id?}");
+                    pattern: "{controller=Member}/{action=Index}/{id?}");
             
             });
         }

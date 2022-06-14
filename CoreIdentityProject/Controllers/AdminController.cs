@@ -10,7 +10,7 @@ using Microsoft.AspNetCore.Mvc;
 
 namespace CoreIdentityProject.Controllers
 {
-    [Authorize(Roles ="admin")]
+    [Authorize(Roles = "Admin")]
     public class AdminController : BaseController
     {
         public AdminController(UserManager<AppUser> userManager,RoleManager<AppRole> roleManager):base(userManager,null,roleManager)
@@ -21,6 +21,11 @@ namespace CoreIdentityProject.Controllers
         public IActionResult Index()
         {
             return View();
+        }
+
+        public IActionResult Claims()
+        {
+            return View(User.Claims.ToList());
         }
 
         public IActionResult Roles()

@@ -1,5 +1,6 @@
 ﻿using System;
 using System.IO;
+using System.Security.Claims;
 using System.Threading.Tasks;
 using CoreIdentityProject.Enums;
 using CoreIdentityProject.Models;
@@ -16,8 +17,6 @@ namespace CoreIdentityProject.Controllers
     [Authorize]
     public class MemberController : BaseController
     {
-       
-
         public MemberController(UserManager<AppUser> userManager, SignInManager<AppUser> signInManager):base(userManager, signInManager)
         {
            
@@ -151,24 +150,82 @@ namespace CoreIdentityProject.Controllers
             
         }
 
-
-        public IActionResult AccessDenied()
+        public IActionResult AccessDenied(string returnUrl)
         {
+
+            if(returnUrl.Contains("ViolencePage"))
+            {
+                ViewBag.Message = "Erişmeye çalıştığınız sayfa şiddet videoları içerdiğinden dolayı 15 yaşından büyük olmanız gerekmektedir.";
+            }
+            else if(returnUrl.Contains("ExChange"))
+            {
+               
+                ViewBag.Message = "30 Gün Demo süreciniz bitmiştir.";
+            }
+            else if (returnUrl.Contains("AnkaraPage"))
+            {
+                ViewBag.Message = "Bu sayfaya sadece şehir alanı Ankara olan kullanıcılar eşibilir.";
+            }
+            else
+            {
+                ViewBag.Message = "Bu sayfaya erişim izniniz yoktur. Erişim izni almak için site yöneticisi ile görüşünüz";
+            }
+
             return View();
         }
 
-
-        [Authorize(Roles = "manager")]
+        [Authorize(Roles = "Manager,Admin")]
         public IActionResult Manager()
         {
             return View();
         }
 
-
-        [Authorize(Roles ="editor")]
+        [Authorize(Roles = "Editör,Admin")]
         public IActionResult Editor()
         {
             return View();
         }
+
+
+        [Authorize(Policy="AnkaraPolicy")]
+        public IActionResult AnkaraPage()
+        {
+
+            return View();
+        }
+
+
+        [Authorize(Policy = "ViolencePolicy")]
+        public IActionResult ViolencePage()
+        {
+
+            return View();
+        }
+
+
+        public async Task<IActionResult> ExchangeRedirect()
+        {
+            bool result = User.HasClaim(x => x.Type == "ExpireDateExchange");
+
+            if(!result)
+            {
+                Claim expireDateExchange = new Claim("ExpireDateExchange",DateTime.Now.AddDays(30).Date.ToShortDateString(),ClaimValueTypes.String,"Internal");
+
+                await _userManager.AddClaimAsync(CurrentUser, expireDateExchange);
+                await _signInManager.SignOutAsync();
+                await _signInManager.SignInAsync(CurrentUser,true);
+            }
+
+            return RedirectToAction("ExChange");
+        }
+
+
+        [Authorize(Policy = "ExChangePolicy")]
+        public IActionResult ExChange()
+        {
+            return View();
+        }
+
+
     }
 }

@@ -146,10 +146,10 @@ namespace CoreIdentityProject.Controllers
                     token = passwordResetToken
                 },HttpContext.Request.Scheme);
 
-                Helper.PasswordReset.PasswordResetSendEmail(passwordResetLink);
+                Helper.PasswordReset.PasswordResetSendEmail(passwordResetLink,user.Email,user.UserName);
 
 
-                ViewBag.Status = "Successfull";
+                ViewBag.Status = "Success";
             }
             else
             {
@@ -157,6 +157,44 @@ namespace CoreIdentityProject.Controllers
             }
 
             return View(passwordResetViewModel);
+        }
+
+        public IActionResult ResetPasswordConfirm(string userId,string token)
+        {
+            TempData["userId"] = userId;
+            TempData["token"] = token;
+            return View();
+        }
+
+        [HttpPost]
+        public async Task<IActionResult> ResetPasswordConfirm([Bind("PasswordNew")]PasswordResetViewModel passwordResetViewModel)
+        {
+            string token = TempData["token"].ToString();
+            string userId = TempData["userId"].ToString();
+
+            AppUser user = await _userManager.FindByIdAsync(userId);
+
+            if(user !=null)
+            {
+                IdentityResult result = await _userManager.ResetPasswordAsync(user, token, passwordResetViewModel.PasswordNew);
+
+                if(result.Succeeded)
+                {
+                    await _userManager.UpdateSecurityStampAsync(user);
+               
+                    ViewBag.Status = "success";
+                }
+                else
+                {
+                    AddModelError(result);
+                }
+            }
+            else
+            {
+                ModelState.AddModelError("", "Hata meydana gelmiştir.Lütfen daha sonra tekrar deneyiniz.");
+            }
+
+             return View(passwordResetViewModel);
         }
     }
 }
