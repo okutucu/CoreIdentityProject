@@ -3,12 +3,10 @@ using System.Net.Mail;
 
 namespace CoreIdentityProject.Helper
 {
-    public static class PasswordReset
+    public static class EmailConfirmation
     {
-        public static void PasswordResetSendEmail(string link,string email,string userName)
+        public static void SendEmail(string link, string email)
         {
-
-
 
             SmtpClient smtpClient = new SmtpClient()
             {
@@ -20,12 +18,12 @@ namespace CoreIdentityProject.Helper
                 Credentials = new NetworkCredential("oktc95@gmail.com", "viitckxmwjzptqxm")
 
             };
-
+              
             MailMessage mailMessage = new MailMessage
             {
                 From = new MailAddress("oktc95@gmail.com"),
-                Subject = $"Author:OguzhanKutucu ::: Reset Password",
-                Body = $"<h2>Şifrenizi yenilemek için aşağıdaki linke tıklayınız..</h2><hr/><a href='{link}'>Şifre yenileme linki</a>",
+                Subject = $"Author:OguzhanKutucu ::: Email Doğrulama",
+                Body = $"<h2>Email adresinizi doğrulamak için lütfen aşağıdaki linke tıklayınız..</h2><hr/><a href='{link}'>Email doğrulama linki</a>",
                 IsBodyHtml = true
 
             };
@@ -35,5 +33,7 @@ namespace CoreIdentityProject.Helper
             smtpClient.Send(mailMessage);
 
         }
+
+
     }
 }

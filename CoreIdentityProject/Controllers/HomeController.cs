@@ -43,6 +43,12 @@ namespace CoreIdentityProject.Controllers
                         return View(loginViewModel);
                     }
 
+                    if(_userManager.IsEmailConfirmedAsync(user).Result == false)
+                    {
+                        ModelState.AddModelError("", "Email adresiniz onaylanmamıştır. Lütfen epostanızı kontrol ediniz.");
+                        return View(loginViewModel);
+                    }
+
                    await _signInManager.SignOutAsync();
                    Microsoft.AspNetCore.Identity.SignInResult result =  await _signInManager.PasswordSignInAsync(user, loginViewModel.Password, loginViewModel.RememberMe, false);
 
@@ -113,7 +119,20 @@ namespace CoreIdentityProject.Controllers
 
                 if (result.Succeeded)
                 {
-                    return RedirectToAction("LogIn");
+                    string confirmationToken = await _userManager.GenerateEmailConfirmationTokenAsync(user);
+                    string link = Url.Action("ConfirmEmail","Home", new
+                    {
+                        userId = user.Id,
+                        token = confirmationToken
+                    },protocol:HttpContext.Request.Scheme);
+
+                    Helper.EmailConfirmation.SendEmail(link, user.Email);
+
+
+                    ViewBag.Status = "success";
+
+
+                  
                 }
                 else
                 {
@@ -195,6 +214,28 @@ namespace CoreIdentityProject.Controllers
             }
 
              return View(passwordResetViewModel);
+        }
+
+
+        public async Task<IActionResult> ConfirmEmail(string userId,string token)
+        {
+
+            AppUser user = await _userManager.FindByIdAsync(userId);
+
+            IdentityResult result = await _userManager.ConfirmEmailAsync(user, token);
+
+            if(result.Succeeded)
+            {
+                ViewBag.Status = "success";
+            }
+            else
+            {
+                ViewBag.Status = "notSuccess";
+            }
+           
+
+            return View();
+            
         }
     }
 }

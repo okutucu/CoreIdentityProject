@@ -9,7 +9,16 @@
     <h4>Kullanıcı Oluşturma Formu</h4>
 
 <hr />
-<div class="row">
+
+</div>
+
+@if (ViewBag.Status == "success")
+{
+    <div class="alert alert-success">Epostanıza onay maili  başarılı bir şekilde gönderilmiştir. Lütfen kontrol ediniz.</div>
+}
+else
+{
+    <div class="row">
     <div class="col-md-4">
         <form asp-action="SignUp" method="post">
             <div asp-validation-summary="ModelOnly" class="text-danger"></div>
@@ -44,5 +53,12 @@
     </div>
 </div>
 
-</div>
+}
+
+
+
+
+
+
+
 

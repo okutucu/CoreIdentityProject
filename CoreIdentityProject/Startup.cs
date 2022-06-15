@@ -121,7 +121,7 @@ namespace CoreIdentityProject
             {
                 endpoints.MapControllerRoute(
                     name: "default",
-                    pattern: "{controller=Member}/{action=Index}/{id?}");
+                    pattern: "{controller=Home}/{action=Index}/{id?}");
             
             });
         }

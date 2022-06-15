@@ -1,0 +1,16 @@
+﻿
+@{
+    ViewData["Title"] = "ConfirmEmail";
+}
+
+@if(ViewBag.Status == "success")
+{
+    <div class="mt-2 alert alert-success"> Email Adresiniz başarılı bir şekilde onaylanmıştır </div>
+    <a class="mt-2 btn btn-link" asp-action="LogIn" asp-controller="Home"> Aşağıdaki linkten giriş yapabilirsiniz. </a>
+}
+else
+{
+     <div class="mt-2 alert alert-danger"> Hata meydana geldi. Lütfen daha sonra tekrar deneyiniz. </div>
+}
+
+
